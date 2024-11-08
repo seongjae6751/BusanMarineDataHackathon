@@ -35,12 +35,12 @@ public class TrashController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/check/gps/{trashAcceptanceId}")
+    @PostMapping("/check/gps/{trashId}")
     public ResponseEntity<Boolean> logGps(
-        @PathVariable Long trashAcceptanceId,
+        @PathVariable Long trashId,
         @RequestParam Double latitude,
         @RequestParam Double longitude) {
-        boolean isNearTrash = trashService.logGpsLocation(trashAcceptanceId, latitude, longitude);
+        boolean isNearTrash = trashService.logGpsLocation(trashId, latitude, longitude);
         return ResponseEntity.ok(isNearTrash);
     }
 }

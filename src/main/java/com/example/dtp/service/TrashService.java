@@ -79,11 +79,9 @@ public class TrashService {
     }
 
     // GPS 위치 확인 메서드
-    public boolean logGpsLocation(Long trashAcceptanceId, Double latitude, Double longitude) {
-        TrashAcceptance acceptance = trashAcceptanceRepository.findById(trashAcceptanceId)
-            .orElseThrow(() -> new IllegalArgumentException("Acceptance not found with id: " + trashAcceptanceId));
-
-        Trash trash = acceptance.getTrash();
+    public boolean logGpsLocation(Long trashId, Double latitude, Double longitude) {
+        Trash trash = trashRepository.findById(trashId)
+            .orElseThrow(() -> new IllegalArgumentException("Trash not found with id: " + trashId));
 
         // 위치가 50미터 이내인지 확인 후 결과 반환
         return isWithinProximity(trash.getLatitude(), trash.getLongitude(), latitude, longitude);

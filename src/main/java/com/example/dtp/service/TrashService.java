@@ -79,22 +79,16 @@ public class TrashService {
     }
 
     // GPS 위치 확인 메서드
-    public void logGpsLocation(Long trashAcceptanceId, Double latitude, Double longitude) {
+    public boolean logGpsLocation(Long trashAcceptanceId, Double latitude, Double longitude) {
         TrashAcceptance acceptance = trashAcceptanceRepository.findById(trashAcceptanceId)
             .orElseThrow(() -> new IllegalArgumentException("Acceptance not found with id: " + trashAcceptanceId));
 
         Trash trash = acceptance.getTrash();
 
-        // 위도 경도를 기반으로 두 위치가 가까운지 확인
-        if (isWithinProximity(trash.getLatitude(), trash.getLongitude(), latitude, longitude)) {
-            // 위치가 일치하면 처리 로직 (예: 상태 업데이트 등)
-            // 여기에 필요한 로직 추가
-        } else {
-            throw new IllegalArgumentException("Location does not match the accepted trash location.");
-        }
+        // 위치가 50미터 이내인지 확인 후 결과 반환
+        return isWithinProximity(trash.getLatitude(), trash.getLongitude(), latitude, longitude);
     }
 
-    // 거리 계산 메서드 (위도, 경도 기준)
     private boolean isWithinProximity(double lat1, double lon1, double lat2, double lon2) {
         final double EARTH_RADIUS = 6371; // 지구 반지름 (킬로미터)
         double latDistance = Math.toRadians(lat2 - lat1);

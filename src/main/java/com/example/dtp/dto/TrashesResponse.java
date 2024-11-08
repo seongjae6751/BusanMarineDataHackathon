@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record TrashesResponse(
-    List<InnerTrashResponse> trashes
+    List<InnerTrashResponse> trashes,
+    double totalPrice // totalPrice 추가
 ) {
 
     public record InnerTrashResponse(
@@ -12,11 +13,13 @@ public record TrashesResponse(
         String category,
         Double latitude,
         Double longitude,
-        LocalDateTime createdAt) {
-
+        LocalDateTime createdAt,
+        Double weight, // weight 필드 추가
+        double price   // 개별 price 필드 추가
+    ) {
     }
 
-    public static TrashesResponse from(List<InnerTrashResponse> trashes) {
-        return new TrashesResponse(trashes);
+    public static TrashesResponse from(List<InnerTrashResponse> trashes, double totalPrice) {
+        return new TrashesResponse(trashes, totalPrice);
     }
 }

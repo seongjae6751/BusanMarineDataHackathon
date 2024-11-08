@@ -29,6 +29,8 @@ public class Trash {
 
     private Double longitude;
 
+    private Double weight;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 }

@@ -1,6 +1,7 @@
 package com.example.dtp.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -24,16 +25,41 @@ public class TrashService {
 
     public TrashesResponse getAllTrash() {
         List<Trash> trashes = trashRepository.findAll();
+
+        // 카테고리별로 단가를 설정합니다 (예: kg당 가격)
+        final Map<String, Double> pricePerKg = Map.of(
+            "bottle", 0.5,
+            "plastic", 0.2,
+            "metal", 1.0,
+            "paper", 0.1
+        );
+
         List<TrashesResponse.InnerTrashResponse> trashDTOs = trashes.stream()
-            .map(trash -> new TrashesResponse.InnerTrashResponse(
-                trash.getId(),
-                trash.getCategory(),
-                trash.getLatitude(),
-                trash.getLongitude(),
-                trash.getCreatedAt()))
+            .map(trash -> {
+                double price = calculatePrice(trash, pricePerKg); // 개별 가격 계산
+
+                return new TrashesResponse.InnerTrashResponse(
+                    trash.getId(),
+                    trash.getCategory(),
+                    trash.getLatitude(),
+                    trash.getLongitude(),
+                    trash.getCreatedAt(),
+                    trash.getWeight(),
+                    price
+                );
+            })
             .toList();
 
-        return TrashesResponse.from(trashDTOs);
+        double totalPrice = trashDTOs.stream()
+            .mapToDouble(TrashesResponse.InnerTrashResponse::price)
+            .sum();
+
+        return TrashesResponse.from(trashDTOs, totalPrice);
+    }
+
+    private double calculatePrice(Trash trash, Map<String, Double> pricePerKg) {
+        // 카테고리별로 설정된 단가를 가져와 무게와 곱하여 가격을 계산
+        return pricePerKg.getOrDefault(trash.getCategory(), 0.0) * trash.getWeight();
     }
 
     public void acceptTrash(Long trashId, String userId) {
